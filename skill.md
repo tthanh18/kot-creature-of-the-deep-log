@@ -2,7 +2,7 @@
 name: kot-battle-log
 description: >-
   Phân tích 1 ảnh kết quả King of Thieves (KOT) clan battle và xuất log theo
-  template cố định; map/cá lấy từ mapping-battle.json (hỏi user nếu thiếu).
+  template cố định; map/cá lấy từ JSON nhúng trong skill (hỏi user nếu thiếu).
   Dùng khi user gửi screenshot KOT, battle result, clan vs clan, hoặc nhắc
   SSS / log KOT / template KOT.
 ---
@@ -31,7 +31,7 @@ Khi user gửi **một** ảnh kết quả trận KOT, đọc ảnh và trả **
 
 **Ngày:** Dùng ngày user nói trong prompt (vd. "hôm nay"); không có thì dùng ngày hiện tại. Format `DD/MM/YYYY`.
 
-**Map:** Không có trên ảnh và user **không** nói map/cá trong prompt → xem mục [Map từ mapping-battle.json](#map-từ-mapping-battlejson) bên dưới.
+**Map:** Không có trên ảnh và user **không** nói map/cá trong prompt → xem [Mapping map/cá](#mapping-mapcá).
 
 **Top Battle:** Chỉ top 3 player phe SSS (nếu có trên ảnh); giữ đúng chữ hoa/thường tên trong game.
 
@@ -43,36 +43,49 @@ Map: [map_name] - [fish_list hoặc để trống]
 Top Battle: [top1], [top2], [top3]
 ```
 
-- `[another_clan_name]`: tên clan đối thủ **bên phải**, không kèm tag, vd. `Moczykije z Polski`.
+- `[another_clan_name]`: tên clan đối thủ **bên phải**, không kèm tag, vd. `Angler's of the deep`.
 - Mỗi lần chỉ xuất **một** log hoàn chỉnh, copy-paste được.
 - Ba dòng log cách nhau bằng xuống dòng thật (không dùng ký tự `\n`).
 
-## Map từ mapping-battle.json
+## Mapping map/cá
 
-File: `mapping-battle.json` (root repo). Mỗi entry: `{ map_name, fish: [[cá1, cá2, ...], ...] }`.
+**Luôn** dùng JSON trong section [mapping-battle.json](#mapping-battlejson) cuối file này (kể cả khi load skill qua URL raw). Không fetch file ngoài.
 
-**Khi user chưa cho map/cá:**
+Mỗi entry: `{ "map_name", "fish": [[cá1, cá2, ...], ...] }` — mỗi map có **nhiều bộ cá** (`fish[0]`, `fish[1]`, …).
 
-1. Đọc `mapping-battle.json`.
-2. Xuất log từ ảnh với dòng Map để trống phần fish: `Map:  - ` (hoặc tạm `Map: (chưa có) - `).
-3. Liệt kê **tất cả** `map_name` trong file, đánh số nếu nhiều.
-4. Hỏi user: _Map nào? Hoặc gửi **tên cá đầu tiên** của trận — đủ để match bộ cá trong file._
+### Quy tắc match
 
-**Khi user trả lời (map hoặc cá đầu):**
+| User gửi | Cách match |
+| -------- | ---------- |
+| Chỉ tên map (vd. `Alaska`) | Khớp `map_name` → lấy **`fish[0]`**. |
+| Chỉ tên cá đầu (vd. `Halibut`, `Coho Salmon`) | Tìm `fish[i][0]` trùng (không phân biệt hoa thường). Một kết quả → lấy `map_name` + `fish[i]`. Nhiều kết quả → hỏi user chọn map. |
+| **Map và cá đầu** (vd. `alaska, halibut`) | Trong entry map khớp, tìm `fish[i]` có `fish[i][0]` khớp cá đầu → lấy **cả `fish[i]`**. **Không** lấy `fish[0]` chỉ vì trùng tên map. |
+| Map + cá đầu không khớp | Báo không tìm thấy, list các `fish[i][0]` của map đó. |
 
-| User gửi                                        | Cách match                                                                                                   |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Tên map (vd. `Amazon`, `Great Lake`)            | Khớp `map_name` (không phân biệt hoa thường). Lấy **bộ cá đầu tiên** trong `fish[]` của map đó.              |
-| Tên cá đầu (vd. `Amazon Puffer`, `Coho Salmon`) | Tìm entry có phần tử `fish[i][0]` trùng (không phân biệt hoa thường). Lấy cả `map_name` + cả mảng `fish[i]`. |
-| Map + cá đầu                                    | Ưu tiên khớp cả hai; không khớp thì báo và list lại map.                                                     |
+**Điền dòng Map:** `Map: [map_name] - [cá1], [cá2], ...` — join cả mảng `fish[i]` đã match, phân tách `, `.
 
-**Điền dòng Map:** `Map: [map_name] - [cá1], [cá2], [cá3], ...` — join toàn bộ mảng cá đã match, phân tách bằng `, `.
+**User đã nói map/cá kèm ảnh:** match JSON → xuất **đủ 3 dòng một lần**, không hỏi thêm.
 
-**Khi user đã nói map/cá ngay từ đầu:** match file luôn, xuất log đủ 3 dòng một lần, không hỏi thêm.
+**User chưa nói map/cá:** xuất log với `Map:  - `, list `map_name`, hỏi map hoặc tên cá đầu.
+
+## Cách dùng từ GitHub
+
+1. **Đính kèm ảnh** battle.
+2. Prompt: URL `skill.md` (raw) hoặc `@skill.md` + map/cá, vd. `alaska, halibut`.
 
 ## Ví dụ
 
-**Input:** 1 ảnh — trái King Of Thieves {sSs} **11349**, phải Moczykije z Polski **11002**; top SSS trên ảnh: Con mẹ mày, Hung, Meo meo. User: "hôm nay".
+**Input:** Ảnh — SSS thắng, phải **Angler's of the deep**; top: HuyNgoo, Aizn, Lmao. User: `alaska, halibut`.
+
+**Output:**
+
+```
+19/05/2026 KOT {SSS} vs Angler's of the deep -> Win
+Map: Alaska - Halibut, Humpback Salmon, Coalfish, Steelhead
+Top Battle: HuyNgoo, Aizn, Lmao
+```
+
+**Input:** Ảnh — SSS **11349**, Moczykije z Polski **11002**; top: Con mẹ mày, Hung, Meo meo. User: `Amazon`.
 
 **Output:**
 
@@ -82,46 +95,83 @@ Map: Amazon - Amazon Puffer, Rock-Bacu, Cachama, Corvina
 Top Battle: Con mẹ mày, Hung, Meo meo
 ```
 
-**Input:** Cùng ảnh, user chưa nói map. File có `Great Lake`.
+**Input:** Cùng ảnh, chưa nói map → `Map:  - `, list map, hỏi user.
 
-**Output (lần 1):**
-
-```
-18/05/2026 KOT {SSS} vs Moczykije z Polski -> Win
-Map:  -
-Top Battle: Con mẹ mày, Hung, Meo meo
-```
-
-Map có trong file: **Great Lake**
-
-Bạn chơi map nào? Hoặc gửi tên **cá đầu tiên** của trận.
-
-**Input:** User: `Coho Salmon`
-
-**Output (lần 2 — log hoàn chỉnh):**
-
-```
-18/05/2026 KOT {SSS} vs Moczykije z Polski -> Win
-Map: Great Lake - Coho Salmon, Brook Trout, Channel Catfish, Largermouth Bass
-Top Battle: Con mẹ mày, Hung, Meo meo
-```
-
-**Input:** 1 ảnh — trái SSS **9800**, phải ClanXYZ **10200** (không có top trên ảnh).
-
-**Output:**
-
-```
-18/05/2026 KOT {SSS} vs ClanXYZ -> Lose
-Map:  -
-Top Battle: (cần top 3 player SSS)
-```
+**Input:** User: `Coho Salmon` → `Map: Great Lake - Coho Salmon, Brook Trout, Channel Catfish, Largermouth Bass`.
 
 ## Thiếu dữ liệu
 
-- Thiếu top player trên ảnh → hỏi user hoặc ghi `Top Battle: (cần top 3 player SSS)`.
-- Thiếu tên đối thủ hoặc điểm một phe → nêu rõ trước khi đoán Win/Lose.
-- Không bịa tên player hay điểm không đọc được trên ảnh.
-- Cá/map user gửi không khớp `mapping-battle.json` → báo không tìm thấy, list lại `map_name` có trong file; không đoán fish list.
+- Thiếu top trên ảnh → `Top Battle: (cần top 3 player SSS)` hoặc hỏi user.
+- Thiếu tên đối thủ / điểm → nêu rõ, không đoán Win/Lose.
+- Không bịa tên player hay điểm.
+- Cá/map không khớp JSON → báo + list `map_name` hoặc cá đầu của map; không đoán fish list.
 
-mapping-battle.json
-[ { "map_name": "Paradise", "fish": [ [ "Bluefish", "Longtail Tune", "Largetooth Flounder", "Spot-Fin Porcupinefish" ], ["White-Tuna", "Green Humphead Parrotfish", "Clownfish", "Blue Trevally"], ["Bonefish", "Blue Trevally", "Pelagic Stingray", "Snubnose Pompano"] ] }, { "map_name": "Great Lake", "fish": [ ["Coho Salmon", "Brook Trout", "Channel Catfish", "Largermouth Bass"], ["White bass", "Yellow Perch", "Sea lamprey", "Chinook Salmon"], ["Lake Trout", "Brook Trout", "Pink Salmon", "Lake Sturgeon"] ] }, { "map_name": "Costa Rica", "fish": [ ["Roosterfish", "Dorado", "Tarpon", "Yellowfin Tuna"], ["Blue Marlin", "Snook", "Barracuda", "Pompano"], [ "Pacific Sailfish", "Broomtail Grouper", "Jack Crevalle", "Striped Marlin" ] ] }, { "map_name": "Alaska", "fish": [ ["Arctic Char", "Dolly Varden", "Spiny Skate", "Rougheye Rockfish"], ["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"], ["King Salmon", "Blue Lingcod", "Chum Salmon", "Lancetfish"] ] }, { "map_name": "Australia", "fish": [ [ "albacore", "golden trevally", "queensland grouper", "black-saddler coral grouper" ], ["barramundi", "tailor", "coral trout", "giant trevally"], ["skipjack tuna", "john dory", "carpet shark", "swordfish"] ] }, { "map_name": "Scotland", "fish": [ ["Rainbow Trout", "european whitefish", "carp", "freshwater bream"], ["tench", "european perch", "european eel", "sea trout"], [""] ] }, { "map_name": "Thailand", "fish": [ ["spotted sorubim", "empurau", "bambusa", "great snakehead"], ["black ear catfish", "bighead carp", "malayan leaffish", "wallago"], [] ] }, { "map_name": "Amazon", "fish": [ ["Amazon Puffer", "Rock-Bacu", "Cachama", "Corvina"], ["Red Piranha", "freshwater barracuda", "Giant Trahira", "Zungaro"] ] } ]
+## mapping-battle.json
+
+```json
+[
+  {
+    "map_name": "Paradise",
+    "fish": [
+      ["Bluefish", "Longtail Tune", "Largetooth Flounder", "Spot-Fin Porcupinefish"],
+      ["White-Tuna", "Green Humphead Parrotfish", "Clownfish", "Blue Trevally"],
+      ["Bonefish", "Blue Trevally", "Pelagic Stingray", "Snubnose Pompano"]
+    ]
+  },
+  {
+    "map_name": "Great Lake",
+    "fish": [
+      ["Coho Salmon", "Brook Trout", "Channel Catfish", "Largermouth Bass"],
+      ["White bass", "Yellow Perch", "Sea lamprey", "Chinook Salmon"],
+      ["Lake Trout", "Brook Trout", "Pink Salmon", "Lake Sturgeon"]
+    ]
+  },
+  {
+    "map_name": "Costa Rica",
+    "fish": [
+      ["Roosterfish", "Dorado", "Tarpon", "Yellowfin Tuna"],
+      ["Blue Marlin", "Snook", "Barracuda", "Pompano"],
+      ["Pacific Sailfish", "Broomtail Grouper", "Jack Crevalle", "Striped Marlin"]
+    ]
+  },
+  {
+    "map_name": "Alaska",
+    "fish": [
+      ["Arctic Char", "Dolly Varden", "Spiny Skate", "Rougheye Rockfish"],
+      ["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"],
+      ["King Salmon", "Blue Lingcod", "Chum Salmon", "Lancetfish"]
+    ]
+  },
+  {
+    "map_name": "Australia",
+    "fish": [
+      ["albacore", "golden trevally", "queensland grouper", "black-saddler coral grouper"],
+      ["barramundi", "tailor", "coral trout", "giant trevally"],
+      ["skipjack tuna", "john dory", "carpet shark", "swordfish"]
+    ]
+  },
+  {
+    "map_name": "Scotland",
+    "fish": [
+      ["Rainbow Trout", "european whitefish", "carp", "freshwater bream"],
+      ["tench", "european perch", "european eel", "sea trout"],
+      [""]
+    ]
+  },
+  {
+    "map_name": "Thailand",
+    "fish": [
+      ["spotted sorubim", "empurau", "bambusa", "great snakehead"],
+      ["black ear catfish", "bighead carp", "malayan leaffish", "wallago"],
+      []
+    ]
+  },
+  {
+    "map_name": "Amazon",
+    "fish": [
+      ["Amazon Puffer", "Rock-Bacu", "Cachama", "Corvina"],
+      ["Red Piranha", "freshwater barracuda", "Giant Trahira", "Zungaro"]
+    ]
+  }
+]
+```
