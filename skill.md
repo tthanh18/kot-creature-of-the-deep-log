@@ -1,48 +1,42 @@
 ---
 name: kot-battle-log
 description: >-
-  Xuất ĐÚNG 3 dòng plain-text log KOT từ ảnh battle — không báo cáo markdown.
-  Map/cá từ JSON nhúng. Dùng khi screenshot KOT, SSS, log KOT, alaska halibut.
+  From one KOT battle screenshot, reply with exactly 3 separate lines of plain
+  text (real line breaks). No markdown report. Map/fish from embedded JSON.
 ---
 
-# OUTPUT — ĐỌC TRƯỚC, ƯU TIÊN CAO NHẤT
+# OUTPUT RULES (HIGHEST PRIORITY)
 
-**Toàn bộ reply = đúng 3 dòng log.** Không thêm bất kỳ ký tự/dòng nào khác.
+Your **entire** reply is **exactly 3 lines** of plain text.
 
-```
-[DD/MM/YYYY] KOT {SSS} vs [đối thủ] -> Win
-Map: [map] - [cá1], [cá2], [cá3], [cá4]
-Top Battle: [tên1], [tên2], [tên3]
-```
+Each line is **different**. Use a **real line break** (newline) after line 1 and after line 2.
 
-| Bắt buộc | Chi tiết |
-| -------- | -------- |
-| Số dòng | **3** — không 2, không 4+ |
-| Clan mình | Luôn `{SSS}` — không `King Of Thieves`, không `{S}` |
-| Kết quả | `Win` hoặc `Lose` — không `WIN`, `LOSE`, `WINNER` |
-| Map | `Map: Alaska - Halibut, Humpback Salmon, Coalfish, Steelhead` — **đủ 4 cá** từ JSON, không chỉ 1 cá user nói |
-| Top Battle | **3 tên**, phân tách `, ` — **không** điểm (`1831P`), **không** top 5, **không** xếp hạng `1.` `2.` |
+## The 3 lines (structure)
 
-### CẤM (vi phạm = sai skill)
+**Line 1** — date, clans, result (ends after `Win` or `Lose`):
 
-- Tiêu đề `# KOT Battle Log`, `## Main Battle Info`, `## Notes`, …
-- Bullet `- Clan:`, `- Result:`, `- Score:`
-- Bảng markdown, danh sách đánh số top attacker
-- `Rank: S`, `Battle Fish: Halibut` (một cá) thay vì dòng Map đủ bộ cá
-- Giải thích, nhận xét (`Perfect sweep`, `Strong point spread`, …)
+`[DD/MM/YYYY] KOT {SSS} vs [opponent] -> Win`
 
-### Ví dụ SAI (không được trả kiểu này)
+**Line 2** — map and full fish list (starts with `Map:`):
 
-```
-# KOT Battle Log
-- Clan: King Of Thieves {S} vs Angler's of the deep
-- Result: WIN
-...
-## Top Attackers
-1. HuyNgoo — 1831P
-```
+`Map: [map_name] - [fish1], [fish2], [fish3], [fish4]`
 
-### Ví dụ ĐÚNG (chỉ được trả thế này)
+**Line 3** — top 3 SSS players (starts with `Top Battle:`):
+
+`Top Battle: [name1], [name2], [name3]`
+
+## Correct example (copy this shape — 3 lines, 2 newlines)
+
+Line 1:
+`19/05/2026 KOT {SSS} vs Angler's of the deep -> Win`
+
+Line 2:
+`Map: Alaska - Halibut, Humpback Salmon, Coalfish, Steelhead`
+
+Line 3:
+`Top Battle: HuyNgoo, Aizn, Lmao`
+
+Rendered as the user must see it:
 
 ```
 19/05/2026 KOT {SSS} vs Angler's of the deep -> Win
@@ -50,55 +44,79 @@ Map: Alaska - Halibut, Humpback Salmon, Coalfish, Steelhead
 Top Battle: HuyNgoo, Aizn, Lmao
 ```
 
-Chỉ khi **thiếu dữ liệu bắt buộc** (không đọc được ảnh / thiếu top 3): sau 3 dòng được phép **tối đa 1 câu** hỏi ngắn. Vẫn **không** được báo cáo markdown.
+## WRONG — do NOT do this
+
+**Wrong A — one long line (everything merged):**
+
+`19/05/2026 KOT {SSS} vs Angler's of the deep -> Win Map: Alaska - Halibut, Humpback Salmon, Coalfish, Steelhead Top Battle: HuyNgoo, Aizn, Lmao`
+
+**Wrong B — same merged line repeated 3 times:**
+
+```
+19/05/2026 KOT {SSS} vs Angler's of the deep -> Win Map: Alaska - ... Top Battle: HuyNgoo, Aizn, Lmao
+19/05/2026 KOT {SSS} vs Angler's of the deep -> Win Map: Alaska - ... Top Battle: HuyNgoo, Aizn, Lmao
+19/05/2026 KOT {SSS} vs Angler's of the deep -> Win Map: Alaska - ... Top Battle: HuyNgoo, Aizn, Lmao
+```
+
+**Wrong C — markdown report** (`#` headers, bullets, scores like `1831P`, top 5 list).
+
+## Line-break checklist
+
+Before sending, verify:
+
+1. Line 1 contains `KOT {SSS} vs` and ends with `-> Win` or `-> Lose` — **nothing after that on the same line**.
+2. Line 2 **starts** with `Map:` — not on line 1.
+3. Line 3 **starts** with `Top Battle:` — not on line 1 or 2.
+4. You output the block **once** — not 3 copies of the same text.
+
+## Field rules
+
+| Field | Rule |
+| ----- | ---- |
+| Our clan | Always `{SSS}` in the log (never `King Of Thieves`, never `{S}`) |
+| Result | `Win` or `Lose` (not `WIN` / `LOSE`) |
+| Opponent | Clan name on the **right** of the image, no tag |
+| Win/Lose | Compare scores: **left** (SSS) vs **right**; left higher → `Win` |
+| Date | From user prompt, else today — format `DD/MM/YYYY` |
+| Map line | Full fish array from JSON (4 fish), not only the fish name the user said |
+| Top Battle | Exactly 3 player names, comma-separated — no points, no ranks `1.` `2.` |
+
+Only if data is missing: after the 3 lines you may add **one** short question. Still no markdown report.
 
 ---
 
-# KOT Battle Log
+# How to read the screenshot
 
-Đọc **một** ảnh kết quả trận KOT + map/cá user gửi (nếu có). Áp dụng [OUTPUT](#output--đọc-trước-ưu-tiên-cao-nhất) ở trên.
+- **Left** = our clan (SSS). **Right** = opponent.
+- SSS may show as `{sSs}`, `{S}`, or **King Of Thieves** on screen — log always `{SSS}`.
+- Top Battle = top 3 SSS players on the image; keep exact capitalization.
 
-## Clan
+# Map / fish matching (embedded JSON below)
 
-- Tag **SSS** (ảnh có thể hiện `{sSs}`, `{S}`, **King Of Thieves**).
-- Log: luôn `{SSS}`. Ảnh: **trái** = SSS, **phải** = đối thủ.
+User input `alaska, halibut` = map **Alaska** + first fish **Halibut** → use fish set  
+`["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"]`  
+Do **not** use `fish[0]` (Arctic Char…) when user gave both map and first fish.
 
-## Đọc ảnh
+| User says | Match |
+| --------- | ----- |
+| Map only | `fish[0]` for that map |
+| First fish only | Find `fish[i][0]` match → use full `fish[i]` + `map_name` |
+| Map + first fish | In that map, find `fish[i]` where `fish[i][0]` matches → use full `fish[i]` |
 
-| Field | Cách lấy |
-| ----- | -------- |
-| Đối thủ | Tên clan **phải**, không tag |
-| Win/Lose | Điểm phe **trái** vs **phải**; trái cao hơn → `Win` |
-| Top 3 | Top 3 player phe SSS trên ảnh — **chỉ tên**, đúng hoa thường |
+If map/fish unknown: line 2 = `Map:  - `, then one short line listing available maps.
 
-**Ngày:** User nói trong prompt, không thì hôm nay — `DD/MM/YYYY`.
-
-## Map / cá (JSON cuối file)
-
-`alaska, halibut` = map **Alaska** + cá đầu **Halibut** → lấy bộ `["Halibut","Humpback Salmon","Coalfish","Steelhead"]`, **không** lấy `fish[0]` (Arctic Char…).
-
-| User gửi | Match |
-| -------- | ----- |
-| Chỉ map | `fish[0]` của map đó |
-| Chỉ cá đầu | `fish[i][0]` trùng → cả `fish[i]` + `map_name` |
-| Map + cá đầu | Trong map, `fish[i][0]` trùng cá đầu → cả `fish[i]` |
-
-Chưa có map/cá: dòng 2 = `Map:  - `, sau đó **1 câu** list map / hỏi cá đầu — vẫn không báo cáo.
-
-## Prompt mẫu (URL GitHub)
-
-User có thể chỉ dán URL skill — agent **vẫn phải** tuân OUTPUT 3 dòng:
+# GitHub prompt
 
 ```
 https://raw.githubusercontent.com/tthanh18/kot-creature-of-the-deep-log/refs/heads/master/skill.md
 
-[ảnh battle]
+[battle screenshot]
 alaska, halibut
 ```
 
-Tùy chọn thêm 1 dòng để chặt hơn: `Chỉ 3 dòng log KOT, không markdown.`
+Optional: `Output exactly 3 lines with line breaks. No markdown.`
 
-## mapping-battle.json
+# mapping-battle.json
 
 ```json
 [
