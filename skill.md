@@ -71,15 +71,15 @@ Before sending, verify:
 
 ## Field rules
 
-| Field | Rule |
-| ----- | ---- |
-| Our clan | Always `{SSS}` in the log (never `King Of Thieves`, never `{S}`) |
-| Result | `Win` or `Lose` (not `WIN` / `LOSE`) |
-| Opponent | Clan name on the **right** of the image, no tag |
-| Win/Lose | Compare scores: **left** (SSS) vs **right**; left higher → `Win` |
-| Date | From user prompt, else today — format `DD/MM/YYYY` |
-| Map line | Full fish array from JSON (4 fish), not only the fish name the user said |
-| Top Battle | Exactly 3 player names, comma-separated — no points, no ranks `1.` `2.` |
+| Field      | Rule                                                                     |
+| ---------- | ------------------------------------------------------------------------ |
+| Our clan   | Always `{SSS}` in the log (never `King Of Thieves`, never `{S}`)         |
+| Result     | `Win` or `Lose` (not `WIN` / `LOSE`)                                     |
+| Opponent   | Clan name on the **right** of the image, no tag                          |
+| Win/Lose   | Compare scores: **left** (SSS) vs **right**; left higher → `Win`         |
+| Date       | From user prompt, else today — format `DD/MM/YYYY`                       |
+| Map line   | Full fish array from JSON (4 fish), not only the fish name the user said |
+| Top Battle | Exactly 3 player names, comma-separated — no points, no ranks `1.` `2.`  |
 
 Only if data is missing: after the 3 lines you may add **one** short question. Still no markdown report.
 
@@ -97,10 +97,10 @@ User input `alaska, halibut` = map **Alaska** + first fish **Halibut** → use f
 `["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"]`  
 Do **not** use `fish[0]` (Arctic Char…) when user gave both map and first fish.
 
-| User says | Match |
-| --------- | ----- |
-| Map only | `fish[0]` for that map |
-| First fish only | Find `fish[i][0]` match → use full `fish[i]` + `map_name` |
+| User says        | Match                                                                       |
+| ---------------- | --------------------------------------------------------------------------- |
+| Map only         | `fish[0]` for that map                                                      |
+| First fish only  | Find `fish[i][0]` match → use full `fish[i]` + `map_name`                   |
 | Map + first fish | In that map, find `fish[i]` where `fish[i][0]` matches → use full `fish[i]` |
 
 If map/fish unknown: line 2 = `Map:  - `, then one short line listing available maps.
@@ -115,73 +115,3 @@ alaska, halibut
 ```
 
 Optional: `Output exactly 3 lines with line breaks. No markdown.`
-
-# mapping-battle.json
-
-```json
-[
-  {
-    "map_name": "Paradise",
-    "fish": [
-      ["Bluefish", "Longtail Tune", "Largetooth Flounder", "Spot-Fin Porcupinefish"],
-      ["White-Tuna", "Green Humphead Parrotfish", "Clownfish", "Blue Trevally"],
-      ["Bonefish", "Blue Trevally", "Pelagic Stingray", "Snubnose Pompano"]
-    ]
-  },
-  {
-    "map_name": "Great Lake",
-    "fish": [
-      ["Coho Salmon", "Brook Trout", "Channel Catfish", "Largermouth Bass"],
-      ["White bass", "Yellow Perch", "Sea lamprey", "Chinook Salmon"],
-      ["Lake Trout", "Brook Trout", "Pink Salmon", "Lake Sturgeon"]
-    ]
-  },
-  {
-    "map_name": "Costa Rica",
-    "fish": [
-      ["Roosterfish", "Dorado", "Tarpon", "Yellowfin Tuna"],
-      ["Blue Marlin", "Snook", "Barracuda", "Pompano"],
-      ["Pacific Sailfish", "Broomtail Grouper", "Jack Crevalle", "Striped Marlin"]
-    ]
-  },
-  {
-    "map_name": "Alaska",
-    "fish": [
-      ["Arctic Char", "Dolly Varden", "Spiny Skate", "Rougheye Rockfish"],
-      ["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"],
-      ["King Salmon", "Blue Lingcod", "Chum Salmon", "Lancetfish"]
-    ]
-  },
-  {
-    "map_name": "Australia",
-    "fish": [
-      ["albacore", "golden trevally", "queensland grouper", "black-saddler coral grouper"],
-      ["barramundi", "tailor", "coral trout", "giant trevally"],
-      ["skipjack tuna", "john dory", "carpet shark", "swordfish"]
-    ]
-  },
-  {
-    "map_name": "Scotland",
-    "fish": [
-      ["Rainbow Trout", "european whitefish", "carp", "freshwater bream"],
-      ["tench", "european perch", "european eel", "sea trout"],
-      [""]
-    ]
-  },
-  {
-    "map_name": "Thailand",
-    "fish": [
-      ["spotted sorubim", "empurau", "bambusa", "great snakehead"],
-      ["black ear catfish", "bighead carp", "malayan leaffish", "wallago"],
-      []
-    ]
-  },
-  {
-    "map_name": "Amazon",
-    "fish": [
-      ["Amazon Puffer", "Rock-Bacu", "Cachama", "Corvina"],
-      ["Red Piranha", "freshwater barracuda", "Giant Trahira", "Zungaro"]
-    ]
-  }
-]
-```

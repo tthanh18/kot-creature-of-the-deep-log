@@ -1,0 +1,80 @@
+[
+  {
+    "map_name": "Paradise",
+    "fish": [
+      [
+        "Bluefish",
+        "Longtail Tune",
+        "Largetooth Flounder",
+        "Spot-Fin Porcupinefish"
+      ],
+      ["White-Tuna", "Green Humphead Parrotfish", "Clownfish", "Blue Trevally"],
+      ["Bonefish", "Blue Trevally", "Pelagic Stingray", "Snubnose Pompano"]
+    ]
+  },
+  {
+    "map_name": "Great Lake",
+    "fish": [
+      ["Coho Salmon", "Brook Trout", "Channel Catfish", "Largermouth Bass"],
+      ["White bass", "Yellow Perch", "Sea lamprey", "Chinook Salmon"],
+      ["Lake Trout", "Brook Trout", "Pink Salmon", "Lake Sturgeon"]
+    ]
+  },
+  {
+    "map_name": "Costa Rica",
+    "fish": [
+      ["Roosterfish", "Dorado", "Tarpon", "Yellowfin Tuna"],
+      ["Blue Marlin", "Snook", "Barracuda", "Pompano"],
+      [
+        "Pacific Sailfish",
+        "Broomtail Grouper",
+        "Jack Crevalle",
+        "Striped Marlin"
+      ]
+    ]
+  },
+  {
+    "map_name": "Alaska",
+    "fish": [
+      ["Arctic Char", "Dolly Varden", "Spiny Skate", "Rougheye Rockfish"],
+      ["Halibut", "Humpback Salmon", "Coalfish", "Steelhead"],
+      ["King Salmon", "Blue Lingcod", "Chum Salmon", "Lancetfish"]
+    ]
+  },
+  {
+    "map_name": "Australia",
+    "fish": [
+      [
+        "albacore",
+        "golden trevally",
+        "queensland grouper",
+        "black-saddler coral grouper"
+      ],
+      ["barramundi", "tailor", "coral trout", "giant trevally"],
+      ["skipjack tuna", "john dory", "carpet shark", "swordfish"]
+    ]
+  },
+  {
+    "map_name": "Scotland",
+    "fish": [
+      ["Rainbow Trout", "european whitefish", "carp", "freshwater bream"],
+      ["tench", "european perch", "european eel", "sea trout"],
+      [""]
+    ]
+  },
+  {
+    "map_name": "Thailand",
+    "fish": [
+      ["spotted sorubim", "empurau", "bambusa", "great snakehead"],
+      ["black ear catfish", "bighead carp", "malayan leaffish", "wallago"],
+      []
+    ]
+  },
+  {
+    "map_name": "Amazon",
+    "fish": [
+      ["Amazon Puffer", "Rock-Bacu", "Cachama", "Corvina"],
+      ["Red Piranha", "freshwater barracuda", "Giant Trahira", "Zungaro"]
+    ]
+  }
+]
